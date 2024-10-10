@@ -1,5 +1,643 @@
-template-repository (1.0-1) unstable; urgency=medium
+golang-github-containers-buildah (1.37.3+ds1-3) unstable; urgency=medium
 
-  * Initial release
+  * Replace with standard salsa-ci pipeline
+  * debian/source/lintian-overrides: Ignore too long build-depends field
+  * Avoid running problematic test on s390x
 
- -- Tsic404 <liuheng@deepin.org>  Sat, 28 Jan 2023 13:46:49 +0800
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 29 Sep 2024 12:45:20 -0400
+
+golang-github-containers-buildah (1.37.3+ds1-2) unstable; urgency=medium
+
+  * debian/rules: remove ubuntu-specific hack
+  * debian/patches/manpage-fixes.patch: mark as forwarded
+  * Improve netavark avoidance patch
+  * debian/patches/root-testfail-ignore.patch: Additional cases
+  * debian/rules: Rework what tests are excluded and which are run
+  * Drop 0004-Revert-Builder.cdiSetupDevicesInSpecdefConfig-use-co.patch
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 29 Sep 2024 11:35:06 -0400
+
+golang-github-containers-buildah (1.37.3+ds1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Reinhard Tartler <siretart@tauware.de>  Thu, 26 Sep 2024 05:49:16 -0400
+
+golang-github-containers-buildah (1.37.2+ds1-3) unstable; urgency=medium
+
+  * Upload to unstable
+
+ -- Reinhard Tartler <siretart@tauware.de>  Tue, 10 Sep 2024 07:00:17 -0400
+
+golang-github-containers-buildah (1.37.2+ds1-2) experimental; urgency=medium
+
+  * tighten dependency on containers/luksy
+
+ -- Reinhard Tartler <siretart@tauware.de>  Mon, 02 Sep 2024 07:16:47 -0400
+
+golang-github-containers-buildah (1.37.2+ds1-1) experimental; urgency=medium
+
+  * New upstream release
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 01 Sep 2024 15:51:06 -0400
+
+golang-github-containers-buildah (1.37.1+ds1-2) unstable; urgency=medium
+
+  * Upload to unstable
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sat, 17 Aug 2024 07:37:16 -0400
+
+golang-github-containers-buildah (1.37.1+ds1-1) experimental; urgency=medium
+
+  * New upstream release: 1.37.1
+  * Tighten dependency on containers/{image,common}, docker.io
+  * supress lintian error: field-too-long Built-Using
+
+ -- Reinhard Tartler <siretart@tauware.de>  Thu, 15 Aug 2024 08:57:11 -0400
+
+golang-github-containers-buildah (1.37.0+ds1-1) experimental; urgency=medium
+
+  * New upstream release: 1.37.0
+
+ -- Reinhard Tartler <siretart@tauware.de>  Wed, 07 Aug 2024 06:23:03 -0400
+
+golang-github-containers-buildah (1.35.3+ds1-3) unstable; urgency=medium
+
+  * Team upload
+  * Upload changes from experimental to unstable
+  * d/control:
+    - Update Standards-Version to 4.7.0 (no changes needed)
+    - Bump debhelper-compat to v13
+
+ -- Mathias Gibbens <gibmat@debian.org>  Sat, 27 Jul 2024 01:04:44 +0000
+
+golang-github-containers-buildah (1.35.3+ds1-2) experimental; urgency=medium
+
+  * Refresh and document patches
+  * Build against docker 26.1, Closes: #1072578
+  * Disable TestDeviceFromPath, Closes: #1072147
+  * Tighten depends on:
+     - golang-github-fsouza-go-dockerclient-dev
+     - imagebuildah
+  * Enable heredoc support, Closes: #1072578
+  * Backport patch to support --start-interval
+
+ -- Reinhard Tartler <siretart@tauware.de>  Thu, 11 Jul 2024 20:10:38 -0400
+
+golang-github-containers-buildah (1.35.3+ds1-1) experimental; urgency=medium
+
+  * New upstream release
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 05 May 2024 07:26:58 -0400
+
+golang-github-containers-buildah (1.33.7+ds1-1) unstable; urgency=medium
+
+  * New upstream release
+    Fixes: CVE-2024-1753 container escape fix, Closes: #1067800
+
+ -- Reinhard Tartler <siretart@tauware.de>  Wed, 27 Mar 2024 07:34:07 -0400
+
+golang-github-containers-buildah (1.35.0+ds1-1) experimental; urgency=medium
+
+  * New upstream release
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 17 Mar 2024 21:21:21 -0400
+
+golang-github-containers-buildah (1.34.0+ds1-2) experimental; urgency=medium
+
+  * Tighten dependency on containers/common further (0.57.4+ds1-3~)
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sat, 10 Feb 2024 10:08:21 -0500
+
+golang-github-containers-buildah (1.34.0+ds1-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Tighten dependency on containers/{storage,image,common}
+  * fix build for internal/mkcw/embed
+
+ -- Reinhard Tartler <siretart@tauware.de>  Fri, 09 Feb 2024 12:07:22 -0500
+
+golang-github-containers-buildah (1.33.5+ds1-4) unstable; urgency=medium
+
+  * Upload to unstable
+
+ -- Reinhard Tartler <siretart@tauware.de>  Wed, 07 Feb 2024 05:49:12 -0500
+
+golang-github-containers-buildah (1.33.5+ds1-3) experimental; urgency=medium
+
+  * New upstream release
+
+ -- Reinhard Tartler <siretart@tauware.de>  Tue, 06 Feb 2024 08:03:55 -0500
+
+golang-github-containers-buildah (1.33.3+ds1-2) unstable; urgency=medium
+
+  * Upload to unstable
+
+ -- Reinhard Tartler <siretart@tauware.de>  Thu, 25 Jan 2024 06:44:38 -0500
+
+golang-github-containers-buildah (1.33.3+ds1-1) experimental; urgency=medium
+
+  * New upstream version
+
+ -- Reinhard Tartler <siretart@tauware.de>  Tue, 23 Jan 2024 20:24:22 -0500
+
+golang-github-containers-buildah (1.33.1+ds1-2) unstable; urgency=medium
+
+  * Upload to unstable
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 21 Jan 2024 17:24:10 -0500
+
+golang-github-containers-buildah (1.33.1+ds1-1) experimental; urgency=medium
+
+  * New upstream release
+  * Revert heredoc and --checksum support in Dockerfiles to workaround ancient
+    docker.io package in Debian, cf #1051202
+
+ -- Reinhard Tartler <siretart@tauware.de>  Fri, 24 Nov 2023 12:43:20 +0000
+
+golang-github-containers-buildah (1.32.2+ds1-1) unstable; urgency=medium
+
+  * New upstream version
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 12 Nov 2023 16:33:57 -0500
+
+golang-github-containers-buildah (1.32.0+ds1-2) unstable; urgency=medium
+
+  * Upload to unstable
+
+ -- Reinhard Tartler <siretart@tauware.de>  Fri, 27 Oct 2023 09:18:17 -0400
+
+golang-github-containers-buildah (1.32.0+ds1-1) experimental; urgency=medium
+
+  * New upstream version
+  * install entrypoint.gz for embedding
+  * tighten dependency on containers/common
+  * root-testfail-ignore.patch: fix FTBFS
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sat, 23 Sep 2023 16:39:30 -0400
+
+golang-github-containers-buildah (1.31.2+ds1-3) unstable; urgency=medium
+
+  * Source-only reupload
+
+ -- Reinhard Tartler <siretart@tauware.de>  Wed, 20 Sep 2023 12:44:07 -0400
+
+golang-github-containers-buildah (1.31.2+ds1-2) unstable; urgency=medium
+
+  [ Sam Morris ]
+  * Build with libsubid (Closes: 1033673)
+
+  [ Reinhard Tartler ]
+  * Upload to unstable
+
+ -- Reinhard Tartler <siretart@tauware.de>  Wed, 20 Sep 2023 12:37:22 -0400
+
+golang-github-containers-buildah (1.31.2+ds1-1) experimental; urgency=medium
+
+  * New upstream release
+  * debian/control: tighten dependencies on containers/{storage,image,common}
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 17 Sep 2023 09:55:06 -0400
+
+golang-github-containers-buildah (1.30.0+ds1-3) unstable; urgency=medium
+
+  * Upload to unstable
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sat, 09 Sep 2023 18:05:45 -0400
+
+golang-github-containers-buildah (1.30.0+ds1-2) experimental; urgency=medium
+
+  * Tighten dependencies on containers/image and openshift/imagebuilder
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sat, 02 Sep 2023 21:08:59 -0400
+
+golang-github-containers-buildah (1.30.0+ds1-1) experimental; urgency=medium
+
+  * New upstream release
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sat, 29 Jul 2023 17:54:15 -0400
+
+golang-github-containers-buildah (1.29.0+ds1-1) experimental; urgency=medium
+
+  * New upstream release
+
+ -- Reinhard Tartler <siretart@tauware.de>  Tue, 31 Jan 2023 19:03:50 -0500
+
+golang-github-containers-buildah (1.28.2+ds1-2) experimental; urgency=medium
+
+  * Build against containers/storage >> 1.44
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 15 Jan 2023 14:49:29 -0500
+
+golang-github-containers-buildah (1.28.2+ds1-3) unstable; urgency=medium
+
+  * reupload
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sat, 29 Apr 2023 15:57:39 -0400
+
+golang-github-containers-buildah (1.28.2+ds1-2) unstable; urgency=medium
+
+  [ Martin Dosch ]
+  * d/watch: Fix watch file.
+
+  [ Reinhard Tartler ]
+  * Rebuild against golang-github-containers-storage-dev 1.43.0+ds1-8
+    (Closes: #1034871)
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sat, 29 Apr 2023 10:32:04 -0400
+
+golang-github-containers-buildah (1.28.2+ds1-1) unstable; urgency=medium
+
+  * New upstream version
+  * Bug fix: "Sticky bit isn't preserved when adding tarball", thanks
+    to Arnaud Rebillout for reporting (Closes: #1027259).
+  * Bump standards version
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sat, 29 Apr 2023 10:31:38 -0400
+
+golang-github-containers-buildah (1.28.0+ds1-3) unstable; urgency=medium
+
+  * exclude "buildah/chroot" test, fixes autopkgtest failure
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 27 Nov 2022 11:42:54 -0500
+
+golang-github-containers-buildah (1.28.0+ds1-2) unstable; urgency=medium
+
+  * upload to unstable
+
+ -- Reinhard Tartler <siretart@tauware.de>  Thu, 24 Nov 2022 15:27:47 -0500
+
+golang-github-containers-buildah (1.28.0+ds1-1) experimental; urgency=medium
+
+  * New upstream release
+    new upstream version fixes CVE-2022-27651, Closes: #1009882
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sat, 12 Nov 2022 11:23:23 -0500
+
+golang-github-containers-buildah (1.27.0+ds1-6) experimental; urgency=medium
+
+  * Force building with golang-go, gccgo miscompiles at least on mips
+
+ -- Reinhard Tartler <siretart@tauware.de>  Wed, 24 Aug 2022 17:30:17 +0200
+
+golang-github-containers-buildah (1.27.0+ds1-5) experimental; urgency=medium
+
+  * also exclude running "copier" test from package build, breaks/timeouts
+    on arm64, armel, armhf and powerpc64
+
+ -- Reinhard Tartler <siretart@tauware.de>  Fri, 19 Aug 2022 14:03:30 +0200
+
+golang-github-containers-buildah (1.27.0+ds1-4) experimental; urgency=medium
+
+  * also exclude running pkg/cli test from package build
+
+ -- Reinhard Tartler <siretart@tauware.de>  Fri, 19 Aug 2022 09:51:04 +0200
+
+golang-github-containers-buildah (1.27.0+ds1-3) experimental; urgency=medium
+
+  * don't run test pkg/completion at package build times
+
+ -- Reinhard Tartler <siretart@tauware.de>  Fri, 19 Aug 2022 08:59:36 +0200
+
+golang-github-containers-buildah (1.27.0+ds1-2) experimental; urgency=medium
+
+  * New upstream release
+  * Run tests at build time
+
+ -- Reinhard Tartler <siretart@tauware.de>  Wed, 17 Aug 2022 12:03:08 +0200
+
+golang-github-containers-buildah (1.26.1+ds1-1) experimental; urgency=medium
+
+  * New upstream release
+
+ -- Reinhard Tartler <siretart@tauware.de>  Mon, 16 May 2022 06:33:01 -0400
+
+golang-github-containers-buildah (1.24.1+ds1-1) experimental; urgency=medium
+
+  * New upstream release
+
+ -- Reinhard Tartler <siretart@tauware.de>  Mon, 14 Feb 2022 18:15:39 -0500
+
+golang-github-containers-buildah (1.23.1+ds1-3) unstable; urgency=medium
+
+  * Fix FTBFS, thanks to Lucas Nussbaum for reporting (Closes: #1011869).
+
+ -- Reinhard Tartler <siretart@tauware.de>  Wed, 08 Jun 2022 18:26:11 -0400
+
+golang-github-containers-buildah (1.23.1+ds1-2) unstable; urgency=medium
+
+  * upload to unstable
+
+ -- Reinhard Tartler <siretart@tauware.de>  Tue, 26 Oct 2021 14:38:00 -0400
+
+golang-github-containers-buildah (1.23.1+ds1-1) experimental; urgency=medium
+
+  * New upstream release
+  * refresh/drop patches
+  * Fix watch file
+  * Bump Standards version, no changes needed
+
+ -- Reinhard Tartler <siretart@tauware.de>  Thu, 07 Oct 2021 08:30:11 -0400
+
+golang-github-containers-buildah (1.22.3+ds1-2) unstable; urgency=medium
+
+  * Drop unneeded dependency on golang-github-openshift-api-dev
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sat, 04 Sep 2021 19:24:50 +0200
+
+golang-github-containers-buildah (1.22.3+ds1-1) unstable; urgency=medium
+
+  * New upstream release (Closes: #992139)
+  * Add patch to manpages to fix installation to correct sections
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 29 Aug 2021 21:19:30 +0200
+
+golang-github-containers-buildah (1.21.3+ds1-1) experimental; urgency=medium
+
+  * New upstream release
+
+ -- Reinhard Tartler <siretart@tauware.de>  Tue, 20 Jul 2021 08:14:23 -0400
+
+golang-github-containers-buildah (1.21.0+ds1-2) experimental; urgency=medium
+
+  * Burn version number for botched previous upload
+
+ -- Reinhard Tartler <siretart@tauware.de>  Mon, 07 Jun 2021 19:06:07 -0400
+
+golang-github-containers-buildah (1.21.0+ds1-1) experimental; urgency=medium
+
+  * New upstream release
+
+ -- Reinhard Tartler <siretart@tauware.de>  Mon, 07 Jun 2021 18:57:28 -0400
+
+golang-github-containers-buildah (1.20.1+ds1-2) experimental; urgency=medium
+
+  * Build-Depend on golang-github-vbauerster-mpb-dev (>= 6)
+
+ -- Reinhard Tartler <siretart@tauware.de>  Fri, 28 May 2021 16:30:43 -0400
+
+golang-github-containers-buildah (1.20.1+ds1-1) experimental; urgency=medium
+
+  * New upstream release
+  * Drop dependency against golang-github-seccomp-containers-golang-dev,
+    thanks to Laurent Bigonville (Closes: #988444).
+
+ -- Reinhard Tartler <siretart@tauware.de>  Fri, 28 May 2021 13:35:51 -0400
+
+golang-github-containers-buildah (1.19.6+dfsg1-1) unstable; urgency=medium
+
+  * New upstream version targeted at podman 3.0
+  * remove 2993.patch, merged upstream
+
+ -- Reinhard Tartler <siretart@tauware.de>  Tue, 23 Feb 2021 07:10:49 -0500
+
+golang-github-containers-buildah (1.19.4+dfsg1-3) unstable; urgency=medium
+
+  * Upload to unstable to pickup fix that closes: #982467
+  * Revert "Tighten dependencies on containers/{storage,image,common}"
+
+ -- Reinhard Tartler <siretart@tauware.de>  Fri, 12 Feb 2021 06:38:06 -0500
+
+golang-github-containers-buildah (1.19.4+dfsg1-2) experimental; urgency=medium
+
+  * Cherry-pick upstream patch: Fix caching layers with build args
+
+ -- Reinhard Tartler <siretart@tauware.de>  Wed, 10 Feb 2021 12:59:27 -0500
+
+golang-github-containers-buildah (1.19.4+dfsg1-1) experimental; urgency=medium
+
+  * New upstream version 1.19.4+dfsg1
+  * Tighten dependencies on containers/{storage,image,common}
+  * drop 2967.patch, merged upstream
+
+ -- Reinhard Tartler <siretart@tauware.de>  Tue, 09 Feb 2021 22:02:12 -0500
+
+golang-github-containers-buildah (1.19.3+dfsg1-2) unstable; urgency=medium
+
+  * Unbreak image caching (Closes: #981849)
+  * buildah: Add critical comma in Depends
+  * Revert "Disabled "Testsuite: autopkgtest-pkg-go"
+
+ -- Reinhard Tartler <siretart@tauware.de>  Fri, 05 Feb 2021 13:42:07 -0500
+
+golang-github-containers-buildah (1.19.3+dfsg1-1) unstable; urgency=medium
+
+  * Upload to unstable
+  * New upstream version 1.19.3+dfsg1
+
+ -- Reinhard Tartler <siretart@tauware.de>  Tue, 02 Feb 2021 10:07:24 -0500
+
+golang-github-containers-buildah (1.19.2+dfsg1-2) experimental; urgency=medium
+
+  * No longer provide policy.json, moved to containers/common
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sat, 30 Jan 2021 15:44:52 -0500
+
+golang-github-containers-buildah (1.19.2+dfsg1-1) experimental; urgency=medium
+
+  * New upstream version 1.19.2+dfsg1
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 24 Jan 2021 09:07:37 -0500
+
+golang-github-containers-buildah (1.18.0+dfsg1-3) unstable; urgency=medium
+
+  * No longer provide policy.json, moved to containers/common
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sat, 30 Jan 2021 10:33:21 -0500
+
+golang-github-containers-buildah (1.18.0+dfsg1-2) unstable; urgency=medium
+
+  * Upload to unstable
+  * explicitly depend on golang-github-seccomp-libseccomp-golang-dev
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sat, 23 Jan 2021 18:31:09 -0500
+
+golang-github-containers-buildah (1.18.0+dfsg1-1) experimental; urgency=medium
+
+  * debian/control: add dep on golang-github-konsorten-go-windows-terminal-sequences-dev
+  * no longer install sample registries.conf
+  * Fix manpage installation
+  * dropping unused patch
+  * Bump standards-version, no changes needed
+  * New upstream version 1.18.0+dfsg1
+
+ -- Reinhard Tartler <siretart@tauware.de>  Tue, 08 Dec 2020 15:06:53 -0500
+
+golang-github-containers-buildah (1.17.1+dfsg1-1) experimental; urgency=medium
+
+  * New upstream version 1.17.1+dfsg1
+
+ -- Reinhard Tartler <siretart@tauware.de>  Mon, 30 Nov 2020 15:54:11 -0500
+
+golang-github-containers-buildah (1.16.6+dfsg1-2) unstable; urgency=medium
+
+  * Fix manpage installation (Closes: #977515)
+  * no longer install sample registries.conf
+  * Bump standards-version, no changes needed
+
+ -- Reinhard Tartler <siretart@tauware.de>  Tue, 15 Dec 2020 22:33:30 -0500
+
+golang-github-containers-buildah (1.16.6+dfsg1-1) unstable; urgency=medium
+
+  [ Debian Janitor ]
+  * Set upstream metadata fields: Bug-Database, Bug-Submit, Repository, Repository-Browse.
+
+  [ Reinhard Tartler ]
+  * Bump standards version, no changes needed
+  * debian/changelog: upate
+  * debian/watch: update to match containers/storage
+  * debian/control: tighten dependencies
+  * debian/copyright: update using cme update dpkg-copyright
+  * New upstream version 1.16.6+dfsg1
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 22 Nov 2020 17:16:10 -0500
+
+golang-github-containers-buildah (1.15.2-1) unstable; urgency=medium
+
+  * New upstream version 1.15.2
+  * Bump standards version, no changes needed
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sat, 12 Sep 2020 15:29:43 -0400
+
+golang-github-containers-buildah (1.15.0-8) unstable; urgency=medium
+
+  * Team upload.
+  * Upload to unstable.
+
+ -- Shengjing Zhu <zhsj@debian.org>  Sun, 23 Aug 2020 02:33:58 +0800
+
+golang-github-containers-buildah (1.15.0-7) experimental; urgency=medium
+
+  * Team upload.
+  * Fix build with latest runtime spec
+
+ -- Shengjing Zhu <zhsj@debian.org>  Wed, 19 Aug 2020 02:08:37 +0800
+
+golang-github-containers-buildah (1.15.0-6) unstable; urgency=medium
+
+  * Add missing hunk to ftbfs-mips.patch
+
+ -- Reinhard Tartler <siretart@tauware.de>  Thu, 30 Jul 2020 07:18:24 -0400
+
+golang-github-containers-buildah (1.15.0-5) unstable; urgency=medium
+
+  * Add patch to unbreak build on mips
+
+ -- Reinhard Tartler <siretart@tauware.de>  Tue, 21 Jul 2020 10:11:45 -0400
+
+golang-github-containers-buildah (1.15.0-4) unstable; urgency=medium
+
+  * Upload to unstable
+
+ -- Reinhard Tartler <siretart@tauware.de>  Mon, 20 Jul 2020 10:05:11 -0400
+
+golang-github-containers-buildah (1.15.0-3) experimental; urgency=medium
+
+  * golang-github-containers-buildah-dev: Depend on containers/common
+
+ -- Reinhard Tartler <siretart@tauware.de>  Wed, 15 Jul 2020 07:12:06 -0400
+
+golang-github-containers-buildah (1.15.0-2) experimental; urgency=medium
+
+  * Build Depend against golang-github-containers-common-dev
+  * Install sample registries.conf (Closes: #961497)
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 12 Jul 2020 21:31:38 -0400
+
+golang-github-containers-buildah (1.15.0-1) experimental; urgency=medium
+
+  * New upstream version
+  * Add Build-Depends:
+    - golang-github-containers-ocicrypt-dev
+    - golang-github-cyphar-filepath-securejoin-dev
+    - golang-github-ishidawataru-sctp-dev
+  * Temporarily add containers/common as a local patch
+
+ -- Reinhard Tartler <siretart@tauware.de>  Fri, 10 Jul 2020 19:41:12 -0400
+
+golang-github-containers-buildah (1.11.6-2) unstable; urgency=medium
+
+  * buildah: Replace Conflicts on fuse-overlayfs with Breaks relationship
+  * Add upstream patch to fix file traversal flaw
+    Fixes: CVE-2020-10696
+
+ -- Reinhard Tartler <siretart@tauware.de>  Wed, 15 Jul 2020 07:30:26 -0400
+
+golang-github-containers-buildah (1.11.6-1) unstable; urgency=medium
+
+  * New upstream release.
+  * DH to version 12.
+  * (Build-)Depends:
+    - golang-github-boltdb-bolt-dev
+    + golang-github-coreos-bbolt-dev (>= 1.3.3~)
+    - golang-github-containerd-continuity-dev
+    = golang-github-containers-image-dev (>= 5.0.0~)
+    + golang-github-openshift-api-dev
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Fri, 03 Jan 2020 07:58:54 +1100
+
+golang-github-containers-buildah (1.10.1-6) unstable; urgency=medium
+
+  * Install "policy.json" conf file and the corresponding man page.
+  * Install "containers/image" man pages (Closes: #947007).
+  * Patch registries.conf to mention its man page.
+  * Suggests += "containers-storage".
+    (provides containers-storage.conf(5) and other man pages).
+  * Recommends += "crun | runc".
+  * Tightened "fuse-overlayfs" dependency.
+  * README.Debian: added "Troubleshooting rootless mode" note.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Sun, 29 Dec 2019 19:26:18 +1100
+
+golang-github-containers-buildah (1.10.1-5) unstable; urgency=medium
+
+  * Install bash completions.
+  * Enabled "ostree" storage.
+  * Build with all security features (seccomp, selinux, apparmor).
+  * (Build-)Depends:
+    + bash-completion
+    + golang-github-seccomp-containers-golang-dev
+    + libapparmor-dev
+    + libostree-dev
+    + libselinux1-dev
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Mon, 02 Dec 2019 22:00:19 +1100
+
+golang-github-containers-buildah (1.10.1-4) unstable; urgency=medium
+
+  * Recommends += "fuse-overlayfs".
+  * Removed "golang-github-docker-distribution-dev" from (Build-)Depends.
+  * Disabled "Testsuite: autopkgtest-pkg-go" which is confused by man
+    pages...
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Sun, 01 Dec 2019 04:41:25 +1100
+
+golang-github-containers-buildah (1.10.1-3) unstable; urgency=medium
+
+  * Install docs and examples.
+  * Build and install man pages (with spelling and section corrections).
+  * Tightened versioned dependency on Docker.
+  * Use non-transitional "logrus" package.
+  * Corrected short package description.
+  * Standards-Version: 4.4.1.
+  * Added myself to Uploaders.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Mon, 11 Nov 2019 15:44:08 +1100
+
+golang-github-containers-buildah (1.10.1-2) unstable; urgency=medium
+
+  * Uploda to unstable
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 10 Nov 2019 10:41:43 -0500
+
+golang-github-containers-buildah (1.10.1-1) experimental; urgency=medium
+
+  * New upstream version
+
+ -- Reinhard Tartler <siretart@tauware.de>  Mon, 21 Oct 2019 08:17:37 -0400
+
+golang-github-containers-buildah (1.7.2-1) experimental; urgency=medium
+
+  * Initial release (Closes: #928083)
+
+ -- Reinhard Tartler <siretart@tauware.de>  Mon, 21 Oct 2019 08:17:01 -0400
