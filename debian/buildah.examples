@@ -1,0 +1,3 @@
+docs/cni-examples
+docs/samples/*
+tests/policy.json

@@ -1,0 +1,4 @@
+## Too many Build-Depends we can't really do anything about...
+golang-github-containers-buildah source: field-too-long Build-Depends *
+# there are some performance test files that produce warnings
+golang-github-containers-buildah source: unpack-message-for-orig

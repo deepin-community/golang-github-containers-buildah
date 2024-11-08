@@ -1,0 +1,6 @@
+usr/bin/buildah     /usr/bin
+usr/bin/copy        /usr/libexec/buildah/
+usr/bin/imgtype     /usr/libexec/buildah/
+usr/bin/serve       /usr/libexec/buildah/
+usr/bin/testreport  /usr/libexec/buildah/
+usr/bin/tutorial    /usr/libexec/buildah/
