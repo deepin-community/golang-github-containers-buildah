@@ -1,0 +1,8 @@
+#!/bin/bash
+
+export BUILDAH_BINARY=/usr/bin/buildah
+export IMGTYPE_BINARY=/usr/libexec/buildah/imgtype
+export COPY_BINARY=/usr/libexec/buildah/copy
+export TUTORIAL_BINARY=/usr/libexec/buildah/tutorial
+
+cd tests && exec ./test_runner.sh "$@"

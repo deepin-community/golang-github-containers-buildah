@@ -1,0 +1,4 @@
+manpage-fixes.patch
+root-testfail-ignore.patch
+0005-Disable-TestDeviceFromPath.patch
+0006-tolerate-absence-of-netavark-binary-in-tests.patch

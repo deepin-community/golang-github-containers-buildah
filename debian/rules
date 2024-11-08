@@ -1,4 +1,36 @@
 #!/usr/bin/make -f
 
+# probably not suitable tests for running as part of package build
+DH_GOLANG_EXCLUDES := \
+	github.com/containers/buildah/tests/e2e \
+	github.com/containers/buildah/tests/conformance
+
+# TODO: fails finding some Containerfiles, not sure what's going wrong
+DH_GOLANG_EXCLUDES += github.com/containers/buildah/pkg/util
+
+# TOOD: builds and runs a helper utility during the tests, find out how
+# to make this work during the package build
+DH_GOLANG_EXCLUDES += github.com/containers/buildah/chroot
+
+# cf. https://github.com/containers/buildah/issues/5713
+ifneq (,$(filter $(DEB_HOST_ARCH), s390x))
+DH_GOLANG_EXCLUDES += github.com/containers/buildah/internal/mkcw
+endif
+
+export DH_GOLANG_EXCLUDES
+export DH_GOLANG_INSTALL_EXTRA := $(wildcard internal/mkcw/embed/*)
+
+override_dh_auto_build: $(MANPAGES) $(MANPAGES5)
+	dh_auto_build -- -tags "seccomp selinux apparmor libsubid"
+	make -C docs docs GOMD2MAN=go-md2man
+	make -C docs install PREFIX=/usr DESTDIR=$(CURDIR)/debian/tmp
+
+override_dh_auto_test:
+	mkdir -p -m700 $(CURDIR)/debian/tmp-home/.cache
+	env \
+		HOME=$(CURDIR)/debian/tmp-home/.cache \
+	dh_auto_test
+	rm -rfv debian/tmp-home
+
 %:
-	dh $@
+	dh $@ --buildsystem=golang --with=golang,bash-completion --builddirectory=_build

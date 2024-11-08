@@ -1,0 +1,21 @@
+From: Reinhard Tartler <siretart@tauware.de>
+Date: Wed, 10 Jul 2024 20:20:58 -0400
+Subject: Fix manpage headers
+
+Forwarded: https://github.com/containers/buildah/pull/5757
+
+===================================================================
+---
+ docs/buildah-manifest-create.1.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/docs/buildah-manifest-create.1.md b/docs/buildah-manifest-create.1.md
+index b66cff9..ebd92f8 100644
+--- a/docs/buildah-manifest-create.1.md
++++ b/docs/buildah-manifest-create.1.md
+@@ -1,4 +1,4 @@
+-# buildah-manifest-create "16" "August 2022" "buildah"
++# buildah-manifest-create "1" "August 2022" "buildah"
+ 
+ ## NAME
+ 

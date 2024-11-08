@@ -1,0 +1,22 @@
+Tests: bats
+Architecture: amd64, arm64
+Depends: apache2-utils,
+         bats,
+         ca-certificates,
+         cpp,
+         curl,
+         file,
+         ginkgo,
+         git,
+         iproute2,
+         jq,
+         ncat,
+         openssh-client,
+         passt,
+         podman,
+         slirp4netns,
+         util-linux,
+         uuid-runtime,
+         @,
+         @recommends@
+Restrictions: allow-stderr, flaky, isolation-machine, needs-internet

@@ -1,0 +1,2 @@
+# this testdata is an intentionally broken archive
+golang-github-containers-buildah-dev: unpack-message-for-deb-data ar failed for usr/share/gocode/src/github.com/containers/buildah/tests/conformance/testdata/wildcard/dir2/file.a
