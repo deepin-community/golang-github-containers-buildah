@@ -12,6 +12,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 
@@ -24,7 +25,6 @@ import (
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/slices"
 )
 
 type BuildOptions struct {
@@ -60,7 +60,6 @@ func GenBuildOptions(c *cobra.Command, inputArgs []string, iopts BuildOptions) (
 		if c.Flag("dns-search").Changed {
 			return options, nil, nil, errors.New("the --dns-search option cannot be used with --network=none")
 		}
-
 	}
 	if c.Flag("tag").Changed {
 		tags = iopts.Tag
