@@ -61,7 +61,7 @@ func TestDeviceParser(t *testing.T) {
 	assert.Equal(t, dest, "/dev/foo")
 	assert.Equal(t, permissions, "rm")
 
-	//test bogus permissions
+	// test bogus permissions
 	_, _, _, err = Device("/dev/fuse1:BOGUS")
 	assert.Error(t, err)
 
@@ -205,7 +205,7 @@ func TestParsePullPolicy(t *testing.T) {
 		"newer":      true,
 		"false":      true,
 		"never":      true,
-		"trye":       false,
+		"try":        false,
 		"truth":      false,
 	}
 	for value, result := range testCases {
