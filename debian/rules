@@ -18,7 +18,7 @@ DH_GOLANG_EXCLUDES += github.com/containers/buildah/internal/mkcw
 endif
 
 export DH_GOLANG_EXCLUDES
-export DH_GOLANG_INSTALL_EXTRA := $(wildcard internal/mkcw/embed/*)
+export DH_GOLANG_INSTALL_EXTRA := $(wildcard internal/mkcw/embed/*) $(wildcard tests/*.json)
 
 override_dh_auto_build: $(MANPAGES) $(MANPAGES5)
 	dh_auto_build -- -tags "seccomp selinux apparmor libsubid"

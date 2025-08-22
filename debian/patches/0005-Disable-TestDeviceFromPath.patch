@@ -8,7 +8,7 @@ Closes: #1072147
  1 file changed, 1 insertion(+)
 
 diff --git a/pkg/parse/parse_test.go b/pkg/parse/parse_test.go
-index f5b12e1..61aec70 100644
+index 6cbb3af..94881b4 100644
 --- a/pkg/parse/parse_test.go
 +++ b/pkg/parse/parse_test.go
 @@ -88,6 +88,7 @@ func TestIsValidDeviceMode(t *testing.T) {
