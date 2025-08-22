@@ -12,6 +12,7 @@ Depends: apache2-utils,
          jq,
          ncat,
          openssh-client,
+         parallel,
          passt,
          podman,
          slirp4netns,
@@ -19,4 +20,4 @@ Depends: apache2-utils,
          uuid-runtime,
          @,
          @recommends@
-Restrictions: allow-stderr, flaky, isolation-machine, needs-internet
+Restrictions: allow-stderr, isolation-machine, needs-internet

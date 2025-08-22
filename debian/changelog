@@ -1,3 +1,44 @@
+golang-github-containers-buildah (1.39.3+ds1-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Reinhard Tartler <siretart@tauware.de>  Tue, 18 Mar 2025 06:55:41 -0400
+
+golang-github-containers-buildah (1.39.0+ds1-1) unstable; urgency=medium
+
+  * New upstream release
+  * Mark bats autopkgtest as no longer flaky
+
+ -- Reinhard Tartler <siretart@tauware.de>  Wed, 12 Feb 2025 09:20:54 -0500
+
+golang-github-containers-buildah (1.38.1+ds1-1) unstable; urgency=medium
+
+  * New upstream release
+  * Tighten dependencies on containers/{storage,image,common}
+  * Fix TOCTOU error when bind and cache mounts use "src" values
+    Fixes: CVE-2024-11218
+  * refresh patches/0006-tolerate-absence-of-netavark-binary-in-tests
+  * Expand patches/root-testfail-ignore.patch
+
+ -- Reinhard Tartler <siretart@tauware.de>  Thu, 23 Jan 2025 06:35:06 -0500
+
+golang-github-containers-buildah (1.38.0+ds1-2) unstable; urgency=medium
+
+  * Upload to unstable
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 17 Nov 2024 10:03:14 -0500
+
+golang-github-containers-buildah (1.38.0+ds1-1) experimental; urgency=medium
+
+  * New upstream release
+  * Tighten dependencies
+  * refresh patches
+  * install additional test files
+  * expand ignore-netavark patch
+  * install the 'inet' test binary
+
+ -- Reinhard Tartler <siretart@tauware.de>  Tue, 12 Nov 2024 09:40:16 -0500
+
 golang-github-containers-buildah (1.37.5+ds1-1) unstable; urgency=medium
 
   * New upstream release

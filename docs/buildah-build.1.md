@@ -183,7 +183,8 @@ given.
 
 **--cert-dir** *path*
 
-Use certificates at *path* (\*.crt, \*.cert, \*.key) to connect to the registry.
+Use certificates at *path* (\*.crt, \*.cert, \*.key) to connect to the registry
+and retrieve contents from HTTPS locations for ADD instructions.
 The default certificates directory is _/etc/containers/certs.d_.
 
 **--cgroup-parent**=""
@@ -535,7 +536,7 @@ If *label* is named, but neither `=` nor a `value` is provided, then the *label*
 Users can set a special LABEL **io.containers.capabilities=CAP1,CAP2,CAP3** in
 a Containerfile that specifies the list of Linux capabilities required for the
 container to run properly. This label specified in a container image tells
-container engines, like Podman, to run the container with just these
+container engines, like Podman, which recognize this label to run the container with just these
 capabilities. The container engine launches the container with just the specified
 capabilities, as long as this list of capabilities is a subset of the default
 list.
@@ -546,7 +547,8 @@ capabilities.
 
 **--layer-label** *label[=value]*
 
-Add an intermediate image *label* (e.g. label=*value*) to the intermediate image metadata. It can be used multiple times.
+Add an intermediate image *label* (e.g. label=*value*) to the metadata in intermediate images, i.e., any images built for
+non-final stages and for non-final instructions in stages when **--layers** is **true**. It can be used multiple times.
 If *label* is named, but neither `=` nor a `value` is provided, then the *label* is set to an empty value.
 
 **--layers** *bool-value*
@@ -901,17 +903,25 @@ specified.  These text substitutions are performed:
 
 Generate SBOMs using the specified scanner image.
 
-**--secret**=**id=id,src=path**
+**--secret**=**id=id[,src=*envOrFile*][,env=ENV][,type=file|env]**
 
 Pass secret information to be used in the Containerfile for building images
 in a safe way that will not end up stored in the final image, or be seen in other stages.
-The secret will be mounted in the container at the default location of `/run/secrets/id`.
+The value of the secret will be read from an environment variable or file named
+by the "id" option, or named by the "src" option if it is specified, or from an
+environment variable specified by the "env" option.
+The secret will be mounted in the container at `/run/secrets/*id*` by default.
 
 To later use the secret, use the --mount flag in a `RUN` instruction within a `Containerfile`:
 
 `RUN --mount=type=secret,id=mysecret cat /run/secrets/mysecret`
 
-Note: Changing the contents of secret files will not trigger a rebuild of layers that use said secrets.
+The location of the secret in the container can be overridden using the
+"target", "dst", or "destination" option of the `RUN --mount` flag.
+
+`RUN --mount=type=secret,id=mysecret,target=/run/secrets/myothersecret cat /run/secrets/myothersecret`
+
+Note: changing the contents of secret files will not trigger a rebuild of layers that use said secrets.
 
 **--security-opt**=[]
 
@@ -925,10 +935,16 @@ Security Options
   "label=type:TYPE"       : Set the label type for the container
   "label=level:LEVEL"     : Set the label level for the container
   "label=disable"         : Turn off label confinement for the container
+
+  "mask=_/path/1:/path/2_": The paths to mask separated by a colon. A masked path cannot be accessed inside the container.
+
   "no-new-privileges"     : Disable container processes from gaining additional privileges
 
   "seccomp=unconfined"    : Turn off seccomp confinement for the container
   "seccomp=profile.json   : JSON configuration for a seccomp filter
+
+  "unmask=_ALL_ or _/path/1:/path/2_, or shell expanded paths (/proc/*): Paths to unmask separated by a colon. If set to **ALL**, it unmasks all the paths that are masked or made read-only by default.
+  The default masked paths are **/proc/acpi, /proc/kcore, /proc/keys, /proc/latency_stats, /proc/sched_debug, /proc/scsi, /proc/timer_list, /proc/timer_stats, /sys/firmware, and /sys/fs/selinux**, **/sys/devices/virtual/powercap**.  The default paths that are read-only are **/proc/asound**, **/proc/bus**, **/proc/fs**, **/proc/irq**, **/proc/sys**, **/proc/sysrq-trigger**, **/sys/fs/cgroup**.
 
 **--shm-size**=""
 
@@ -994,7 +1010,7 @@ When --timestamp is set, the created timestamp is always set to the time specifi
 
 **--tls-verify** *bool-value*
 
-Require HTTPS and verification of certificates when talking to container registries (defaults to true).  TLS verification cannot be used when talking to an insecure registry.
+Require HTTPS and verification of certificates when talking to container registries (defaults to true) and retrieving content from HTTPS locations for ADD instructions.  TLS verification cannot be used when talking to an insecure registry.
 
 **--ulimit** *type*=*soft-limit*[:*hard-limit*]
 
