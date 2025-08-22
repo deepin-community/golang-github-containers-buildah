@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export BUILDAH_BINARY=/usr/bin/buildah
+export INET_BINARY=/usr/libexec/buildah/inet
 export IMGTYPE_BINARY=/usr/libexec/buildah/imgtype
 export COPY_BINARY=/usr/libexec/buildah/copy
 export TUTORIAL_BINARY=/usr/libexec/buildah/tutorial

@@ -1,0 +1,25 @@
+From: Reinhard Tartler <siretart@tauware.de>
+Date: Fri, 24 Jan 2025 06:38:23 -0500
+Subject: integration-tests: Prefer ubi8 over ubi9 image
+
+The ubi9 requires a x86-64-v2 capable cpu, which a default qemu VM
+does not support by default.
+
+Using an older version of rhel works equially fine without this requirement.
+---
+ tests/chroot.bats | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/chroot.bats b/tests/chroot.bats
+index 8df3519..47fafe1 100644
+--- a/tests/chroot.bats
++++ b/tests/chroot.bats
+@@ -22,7 +22,7 @@ load helpers
+   # chosen because its rootfs doesn't have any uid/gid ownership above
+   # $rangesize, because the nested namespace needs to be able to represent all
+   # of them
+-  baseimage=registry.access.redhat.com/ubi9-micro:latest
++  baseimage=registry.access.redhat.com/ubi8-micro:latest
+   _prefetch $baseimage
+   baseimagef=$(tr -c a-zA-Z0-9.- - <<< "$baseimage")
+   # create the directories that we need

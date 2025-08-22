@@ -21,6 +21,12 @@ Defaults to false.
 Note: You can also override the default value of --add-history by setting the
 BUILDAH\_HISTORY environment variable. `export BUILDAH_HISTORY=true`
 
+**--cert-dir** *path*
+
+Use certificates at *path* (\*.crt, \*.cert, \*.key) when connecting to
+registries for pulling images named with the **--from** flag.  The default
+certificates directory is _/etc/containers/certs.d_.
+
 **--checksum** *checksum*
 
 Checksum the source content. The value of *checksum* must be a standard
@@ -41,6 +47,11 @@ not used, defaults to `0:0`.
 Build context directory. Specifying a context directory causes Buildah to
 chroot into the context directory. This means copying files pointed at
 by symbolic links outside of the chroot will fail.
+
+**--exclude** *pattern*
+
+Exclude copying files matching the specified pattern. Option can be specified
+multiple times. See containerignore(5) for supported formats.
 
 **--from** *containerOrImage*
 
@@ -70,9 +81,17 @@ Duration of delay between retry attempts in case of failure when performing pull
 
 Defaults to `2s`.
 
+**--tls-verify** *bool-value*
+
+Require verification of certificates when pulling images referred to with the
+**--from*** flag (defaults to true).  TLS verification cannot be used when
+talking to an insecure registry.
+
 ## EXAMPLE
 
 buildah copy containerID '/myapp/app.conf' '/myapp/app.conf'
+
+buildah copy --exclude=**/*.md docs containerID 'docs' '/docs'
 
 buildah copy --chown myuser:mygroup containerID '/myapp/app.conf' '/myapp/app.conf'
 
@@ -103,7 +122,7 @@ Users can specify a series of Unix shell glob patterns in an ignore file to
 identify files/directories to exclude.
 
 Buildah supports a special wildcard string `**` which matches any number of
-directories (including zero). For example, **/*.go will exclude all files that
+directories (including zero). For example, `**/*.go` will exclude all files that
 end with .go that are found in all directories.
 
 Example .containerignore/.dockerignore file:

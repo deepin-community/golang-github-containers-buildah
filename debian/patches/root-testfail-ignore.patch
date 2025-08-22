@@ -4,17 +4,19 @@ Subject: Skip tests that require root
 
 ===================================================================
 ---
- buildah_test.go            | 3 +++
- cmd/buildah/common_test.go | 2 +-
- convertcw_test.go          | 3 +++
- copier/copier_test.go      | 2 +-
- 4 files changed, 8 insertions(+), 2 deletions(-)
+ buildah_test.go                  | 3 +++
+ cmd/buildah/common_test.go       | 2 +-
+ convertcw_test.go                | 3 +++
+ copier/copier_test.go            | 2 +-
+ internal/open/open_linux_test.go | 4 ++++
+ internal/open/open_test.go       | 4 ++++
+ 6 files changed, 16 insertions(+), 2 deletions(-)
 
 diff --git a/buildah_test.go b/buildah_test.go
-index cb9284d..16fc4d5 100644
+index d9cad2d..d019aba 100644
 --- a/buildah_test.go
 +++ b/buildah_test.go
-@@ -40,6 +40,9 @@ func TestOpenBuilderCommonBuildOpts(t *testing.T) {
+@@ -46,6 +46,9 @@ func TestOpenBuilderCommonBuildOpts(t *testing.T) {
  		GraphRoot:       t.TempDir(),
  		GraphDriverName: "vfs",
  	})
@@ -25,10 +27,10 @@ index cb9284d..16fc4d5 100644
  	t.Cleanup(func() { _, err := store.Shutdown(true); assert.NoError(t, err) })
  	b, err := NewBuilder(ctx, store, BuilderOptions{})
 diff --git a/cmd/buildah/common_test.go b/cmd/buildah/common_test.go
-index 6091804..76ad8cb 100644
+index c55e206..3fc7a5f 100644
 --- a/cmd/buildah/common_test.go
 +++ b/cmd/buildah/common_test.go
-@@ -104,7 +104,7 @@ func failTestIfNotRoot(t *testing.T) {
+@@ -107,7 +107,7 @@ func failTestIfNotRoot(t *testing.T) {
  	if err != nil {
  		t.Log("Could not determine user.  Running without root may cause tests to fail")
  	} else if u.Uid != "0" {
@@ -38,10 +40,10 @@ index 6091804..76ad8cb 100644
  }
  
 diff --git a/convertcw_test.go b/convertcw_test.go
-index c70c189..08d84b6 100644
+index 32f1fb6..a6fb860 100644
 --- a/convertcw_test.go
 +++ b/convertcw_test.go
-@@ -80,6 +80,9 @@ func TestCWConvertImage(t *testing.T) {
+@@ -78,6 +78,9 @@ func TestCWConvertImage(t *testing.T) {
  						GraphDriverName: "vfs",
  					}
  					store, err := storage.GetStore(storeOptions)
@@ -52,7 +54,7 @@ index c70c189..08d84b6 100644
  					t.Cleanup(func() {
  						if _, err := store.Shutdown(true); err != nil {
 diff --git a/copier/copier_test.go b/copier/copier_test.go
-index dc5c52b..e69bd79 100644
+index 24d0a15..86733e4 100644
 --- a/copier/copier_test.go
 +++ b/copier/copier_test.go
 @@ -202,7 +202,7 @@ var (
@@ -62,5 +64,49 @@ index dc5c52b..e69bd79 100644
 -			rootOnly: false,
 +			rootOnly: true,  // some of these tests seem to require real root
  			headers: []tar.Header{
- 				{Name: "file-0", Typeflag: tar.TypeReg, Size: 123456789, Mode: 0600, ModTime: testDate},
- 				{Name: "file-a", Typeflag: tar.TypeReg, Size: 23, Mode: 0600, ModTime: testDate},
+ 				{Name: "file-0", Typeflag: tar.TypeReg, Size: 123456789, Mode: 0o600, ModTime: testDate},
+ 				{Name: "file-a", Typeflag: tar.TypeReg, Size: 23, Mode: 0o600, ModTime: testDate},
+diff --git a/internal/open/open_linux_test.go b/internal/open/open_linux_test.go
+index e89f5fa..d17fc08 100644
+--- a/internal/open/open_linux_test.go
++++ b/internal/open/open_linux_test.go
+@@ -4,6 +4,7 @@ import (
+ 	"os"
+ 	"path/filepath"
+ 	"testing"
++	"strings"
+ 
+ 	"github.com/stretchr/testify/require"
+ 	"golang.org/x/sys/unix"
+@@ -18,6 +19,9 @@ func TestBindFdToPath(t *testing.T) {
+ 	require.NoError(t, err, "opening descriptor for first directory")
+ 	second := t.TempDir()
+ 	err = BindFdToPath(uintptr(fd), second)
++	if strings.Contains(err.Error(), "operation not permitted") {
++		t.Skipf("Skipping test: %v", err)
++	}
+ 	require.NoError(t, err)
+ 	t.Cleanup(func() {
+ 		err := unix.Unmount(second, unix.MNT_DETACH)
+diff --git a/internal/open/open_test.go b/internal/open/open_test.go
+index c349a10..8c1155a 100644
+--- a/internal/open/open_test.go
++++ b/internal/open/open_test.go
+@@ -4,6 +4,7 @@ import (
+ 	"io"
+ 	"os"
+ 	"path/filepath"
++	"strings"
+ 	"testing"
+ 
+ 	"github.com/containers/storage/pkg/reexec"
+@@ -52,6 +53,9 @@ func TestOpenInChroot(t *testing.T) {
+ 			},
+ 		},
+ 	})
++	if strings.Contains(result.Err, "operation not permitted") {
++		t.Skipf("Skipping test: %v", result.Err)
++	}
+ 	require.Empty(t, result.Err, "result from second client")
+ 	require.Equal(t, 1, len(result.Open), "results from second client")
+ 	require.Empty(t, result.Open[0].Err, "first (only) result from second client")

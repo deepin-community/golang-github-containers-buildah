@@ -7,6 +7,7 @@ BUILDAH_BINARY=${BUILDAH_BINARY:-$TEST_SOURCES/../bin/buildah}
 IMGTYPE_BINARY=${IMGTYPE_BINARY:-$TEST_SOURCES/../bin/imgtype}
 COPY_BINARY=${COPY_BINARY:-$TEST_SOURCES/../bin/copy}
 TUTORIAL_BINARY=${TUTORIAL_BINARY:-$TEST_SOURCES/../bin/tutorial}
+INET_BINARY=${INET_BINARY:-$TEST_SOURCES/../bin/inet}
 STORAGE_DRIVER=${STORAGE_DRIVER:-vfs}
 PATH=$(dirname ${BASH_SOURCE})/../bin:${PATH}
 OCI=${CI_DESIRED_RUNTIME:-$(${BUILDAH_BINARY} info --format '{{.host.OCIRuntime}}' || command -v runc || command -v crun)}
@@ -81,21 +82,42 @@ EOF
     PODMAN_REGISTRY_OPTS="${regconfopt}"
 }
 
-function starthttpd() {
+function starthttpd() { # directory [working-directory-or-"" [certfile, keyfile]]
+    if test -n "$4" ; then
+      if ! openssl req -newkey rsa:4096 -nodes -sha256 -keyout "$4" -x509 -days 2 -addext "subjectAltName = DNS:localhost" -out "$3" -subj "/CN=localhost" ; then
+        die error creating new key and certificate
+      fi
+      chmod 644 "$3"
+      chmod 600 "$4"
+    fi
     pushd ${2:-${TEST_SCRATCH_DIR}} > /dev/null
     go build -o serve ${TEST_SOURCES}/serve/serve.go
     portfile=$(mktemp)
     if test -z "${portfile}"; then
-        echo error creating temporaty file
+        echo error creating temporary file
         exit 1
     fi
-    ./serve ${1:-${BATS_TMPDIR}} 0 ${portfile} &
-    HTTP_SERVER_PID=$!
+    pidfile=$(mktemp)
+    if test -z "${pidfile}"; then
+        echo error creating temporary file
+        exit 1
+    fi
+    sh -c "./serve ${1:-${BATS_TMPDIR}} 0 \"${portfile}\" \"${3}\" \"${4}\" ${pidfile} &"
+    waited=0
+    while ! test -s ${pidfile} ; do
+        sleep 0.1
+        if test $((++waited)) -ge 300 ; then
+            echo test http server did not write pid file within timeout
+            exit 1
+        fi
+    done
+    HTTP_SERVER_PID=$(cat ${pidfile})
+    rm -f ${pidfile}
     waited=0
     while ! test -s ${portfile} ; do
         sleep 0.1
         if test $((++waited)) -ge 300 ; then
-            echo test http server did not start within timeout
+            echo test http server did not start listening within timeout
             exit 1
         fi
     done
@@ -150,9 +172,11 @@ function normalize_image_name() {
 
 function _prefetch() {
     if [ -z "${_BUILDAH_IMAGE_CACHEDIR}" ]; then
-        _pgid=$(sed -ne 's/^NSpgid:\s*//p' /proc/$$/status)
-        export _BUILDAH_IMAGE_CACHEDIR=${BATS_TMPDIR}/buildah-image-cache.$_pgid
+        export _BUILDAH_IMAGE_CACHEDIR=${BATS_SUITE_TMPDIR}/buildah-image-cache
         mkdir -p ${_BUILDAH_IMAGE_CACHEDIR}
+
+        # It's 700 by default; that prevents 'unshare' from reading cached images
+        chmod 711 ${BATS_SUITE_TMPDIR:?is unset} ${BATS_SUITE_TMPDIR}/..
     fi
 
     local storage=
@@ -164,22 +188,33 @@ function _prefetch() {
         img=$(normalize_image_name "$img")
         echo "# [checking for: $img]" >&2
         fname=$(tr -c a-zA-Z0-9.- - <<< "$img")
-        if [ -d $_BUILDAH_IMAGE_CACHEDIR/$fname ]; then
-            echo "# [restoring from cache: $_BUILDAH_IMAGE_CACHEDIR / $img]" >&2
-            copy dir:$_BUILDAH_IMAGE_CACHEDIR/$fname containers-storage:"$storage""$img"
-        else
-            rm -fr $_BUILDAH_IMAGE_CACHEDIR/$fname
-            echo "# [copy docker://$img dir:$_BUILDAH_IMAGE_CACHEDIR/$fname]" >&2
-            for attempt in $(seq 3) ; do
-                if copy $COPY_REGISTRY_OPTS docker://"$img" dir:$_BUILDAH_IMAGE_CACHEDIR/$fname ; then
-                    break
-                fi
-                sleep 5
-            done
-            echo "# [copy dir:$_BUILDAH_IMAGE_CACHEDIR/$fname containers-storage:$storage$img]" >&2
-            copy dir:$_BUILDAH_IMAGE_CACHEDIR/$fname containers-storage:"$storage""$img"
-        fi
+        ( flock --timeout 300 9 || die "Could not flock"; _prefetch_locksafe $img $fname ) 9> $_BUILDAH_IMAGE_CACHEDIR/$fname.lock
     done
+}
+
+# DO NOT CALL THIS. EVER. This must only be called from _prefetch().
+function _prefetch_locksafe() {
+    local img="$1"
+    local fname="$2"
+
+    if [ -d $_BUILDAH_IMAGE_CACHEDIR/$fname ]; then
+        echo "# [restoring from cache: $_BUILDAH_IMAGE_CACHEDIR / $img]" >&2
+        copy dir:$_BUILDAH_IMAGE_CACHEDIR/$fname containers-storage:"$storage""$img"
+    else
+        rm -fr ${_BUILDAH_IMAGE_CACHEDIR:?THIS CAN NEVER HAPPEN}/$fname
+        echo "# [copy docker://$img dir:$_BUILDAH_IMAGE_CACHEDIR/$fname]" >&2
+        for attempt in $(seq 3) ; do
+            if copy $COPY_REGISTRY_OPTS docker://"$img" dir:$_BUILDAH_IMAGE_CACHEDIR/$fname ; then
+                break
+            else
+                # Failed. Clean up, so we don't leave incomplete remnants
+                rm -fr ${_BUILDAH_IMAGE_CACHEDIR:?THIS CAN NEVER HAPPEN EITHER}/$fname
+            fi
+            sleep 5
+        done
+        echo "# [copy dir:$_BUILDAH_IMAGE_CACHEDIR/$fname containers-storage:$storage$img]" >&2
+        copy dir:$_BUILDAH_IMAGE_CACHEDIR/$fname containers-storage:"$storage""$img"
+    fi
 }
 
 function createrandom() {
@@ -196,6 +231,25 @@ function random_string() {
     local length=${1:-10}
 
     head /dev/urandom | tr -dc a-zA-Z0-9 | head -c$length
+}
+
+##############
+#  safename  #  Returns a pseudorandom string suitable for container/image/etc names
+##############
+#
+# Name will include the bats test number and a pseudorandom element,
+# eg "t123-xyz123". safename() will return the same string across
+# multiple invocations within a given test; this makes it easier for
+# a maintainer to see common name patterns.
+#
+# String is lower-case so it can be used as an image name
+#
+function safename() {
+    safenamepath=$BATS_SUITE_TMPDIR/.safename.$BATS_SUITE_TEST_NUMBER
+    if [[ ! -e $safenamepath ]]; then
+        echo -n "t${BATS_SUITE_TEST_NUMBER}-$(random_string 8 | tr A-Z a-z)" >$safenamepath
+    fi
+    cat $safenamepath
 }
 
 function buildah() {
@@ -662,8 +716,17 @@ function start_git_daemon() {
       chown -R root:root ${daemondir}/repo
   fi
 
-  GITPORT=$(($RANDOM + 32768))
-  git daemon --detach --pid-file=${TEST_SCRATCH_DIR}/git-daemon/pid --reuseaddr --port=${GITPORT} --base-path=${daemondir} ${daemondir}
+  ${INET_BINARY} -port-file ${TEST_SCRATCH_DIR}/git-daemon/port -pid-file=${TEST_SCRATCH_DIR}/git-daemon/pid -- git daemon --inetd --base-path=${daemondir} ${daemondir} &
+
+  local waited=0
+  while ! test -s ${TEST_SCRATCH_DIR}/git-daemon/pid ; do
+    sleep 0.1
+    if test $((++waited)) -ge 300 ; then
+      echo test git server did not write pid file within timeout
+      exit 1
+    fi
+  done
+  GITPORT=$(cat ${TEST_SCRATCH_DIR}/git-daemon/port)
 }
 
 function stop_git_daemon() {
