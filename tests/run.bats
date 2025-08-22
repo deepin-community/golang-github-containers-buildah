@@ -427,13 +427,25 @@ function configure_and_check_user() {
 	mkdir -p ${TEST_SCRATCH_DIR}/was:empty
 	# As a baseline, this should succeed.
 	run_buildah run --mount type=tmpfs,dst=/var/tmpfs-not-empty                                           $cid touch /var/tmpfs-not-empty/testfile
+	# This should succeed, but the writes should effectively be discarded
 	run_buildah run --mount type=bind,src=${TEST_SCRATCH_DIR}/was:empty,dst=/var/not-empty,rw${zflag:+,${zflag}}      $cid touch /var/not-empty/testfile
+	if test -r ${TEST_SCRATCH_DIR}/was:empty/testfile ; then
+		die write to mounted type=bind was not discarded, ${TEST_SCRATCH_DIR}/was:empty/testfile exists
+	fi
 	# If we're parsing the options at all, this should be read-only, so it should fail.
 	run_buildah 1 run --mount type=bind,src=${TEST_SCRATCH_DIR}/was:empty,dst=/var/not-empty,ro${zflag:+,${zflag}} $cid touch /var/not-empty/testfile
-	# Even if the parent directory doesn't exist yet, this should succeed.
-	run_buildah run --mount type=bind,src=${TEST_SCRATCH_DIR}/was:empty,dst=/var/multi-level/subdirectory,rw          $cid touch /var/multi-level/subdirectory/testfile
-	# And check the same for file volumes.
-	run_buildah run --mount type=bind,src=${TEST_SCRATCH_DIR}/was:empty/testfile,dst=/var/different-multi-level/subdirectory/testfile,rw        $cid touch /var/different-multi-level/subdirectory/testfile
+	# Even if the parent directory doesn't exist yet, this should succeed, but again the write should be discarded.
+	run_buildah run --mount type=bind,src=${TEST_SCRATCH_DIR}/was:empty,dst=/var/multi-level/subdirectory,rw${zflag:+,${zflag}}       $cid touch /var/multi-level/subdirectory/testfile
+	if test -r ${TEST_SCRATCH_DIR}/was:empty/testfile ; then
+		die write to mounted type=bind was not discarded, ${TEST_SCRATCH_DIR}/was:empty/testfile exists
+	fi
+	# And check the same for file volumes, which make life harder because the kernel's overlay
+	# filesystem really only wants to be dealing with directories.
+	: > ${TEST_SCRATCH_DIR}/was:empty/testfile
+	run_buildah run --mount type=bind,src=${TEST_SCRATCH_DIR}/was:empty/testfile,dst=/var/different-multi-level/subdirectory/testfile,rw${zflag:+,${zflag}}        $cid sh -c 'echo wrote > /var/different-multi-level/subdirectory/testfile'
+	if test -s ${TEST_SCRATCH_DIR}/was:empty/testfile ; then
+		die write to mounted type=bind was not discarded, ${TEST_SCRATCH_DIR}/was:empty/testfile was written to
+	fi
 }
 
 @test "run --mount=type=bind with from like buildkit" {
@@ -441,16 +453,17 @@ function configure_and_check_user() {
 	zflag=
 	if which selinuxenabled > /dev/null 2> /dev/null ; then
 		if selinuxenabled ; then
-			skip "skip if selinux enabled, since stages have different selinux label"
+			zflag=,z
 		fi
 	fi
 	run_buildah build -t buildkitbase $WITH_POLICY_JSON -f $BUDFILES/buildkit-mount-from/Dockerfilebuildkitbase $BUDFILES/buildkit-mount-from/
 	_prefetch alpine
 	run_buildah from --quiet --pull=false $WITH_POLICY_JSON alpine
 	cid=$output
-	run_buildah run --mount type=bind,source=.,from=buildkitbase,target=/test,z  $cid cat /test/hello
-	expect_output --substring "hello"
-	run_buildah rmi -f buildkitbase
+	run_buildah run --mount type=bind,source=.,from=buildkitbase,target=/test${zflag}  $cid cat /test/hello1
+	expect_output --substring "hello1"
+	run_buildah run --mount type=bind,source=subdir,from=buildkitbase,target=/test${zflag}  $cid cat /test/hello
+	expect_output --substring "hello2"
 }
 
 @test "run --mount=type=cache like buildkit" {
@@ -458,14 +471,14 @@ function configure_and_check_user() {
 	zflag=
 	if which selinuxenabled > /dev/null 2> /dev/null ; then
 		if selinuxenabled ; then
-			skip "skip if selinux enabled, since stages have different selinux label"
+			zflag=,z
 		fi
 	fi
 	_prefetch alpine
 	run_buildah from --quiet --pull=false $WITH_POLICY_JSON alpine
 	cid=$output
-	run_buildah run --mount type=cache,target=/test,z  $cid sh -c 'echo "hello" > /test/hello && cat /test/hello'
-	run_buildah run --mount type=cache,target=/test,z  $cid cat /test/hello
+	run_buildah run --mount type=cache,target=/test${zflag}  $cid sh -c 'mkdir -p /test/subdir && echo "hello" > /test/subdir/h.txt && cat /test/subdir/h.txt'
+	run_buildah run --mount type=cache,src=subdir,target=/test${zflag}  $cid cat /test/h.txt
 	expect_output --substring "hello"
 }
 
@@ -511,9 +524,7 @@ function configure_and_check_user() {
 
 @test "Check if containers run with correct open files/processes limits" {
 	skip_if_no_runtime
-        if grep -qi debian /etc/os-release; then
-            skip "FIXME: 2024-05-29 something broken in debian ulimits"
-        fi
+	skip "FIXME: we cannot rely on podman-run ulimits matching buildah-bud (see #5820)"
 
 	# we need to not use the list of limits that are set in our default
 	# ${TEST_SOURCES}/containers.conf for the sake of other tests, and override
@@ -742,6 +753,8 @@ function configure_and_check_user() {
 	ip=$(hostname -I | cut -f 1 -d " ")
 	run_buildah run --network pasta --hostname $hostname $cid cat /etc/hosts
 	assert "$output" =~ "$ip[[:blank:]]$hostname $cid" "--network pasta adds correct hostname"
+	# FIXME we need pasta 20240814 or newer in the VMs to enable this
+	# assert "$output" =~ "169.254.1.2[[:blank:]]host.containers.internal" "--network pasta adds correct internal entry"
 
 	# check with containers.conf setting
 	echo -e "[network]\ndefault_rootless_network_cmd = \"pasta\"" > ${TEST_SCRATCH_DIR}/containers.conf
@@ -750,7 +763,7 @@ function configure_and_check_user() {
 
 	# resolv.conf checks
 	run_buildah run --network pasta $cid grep nameserver /etc/resolv.conf
-	assert "${lines[0]}" == "nameserver 169.254.0.1" "first pasta nameserver should be stub forwarder"
+	assert "${lines[0]}" == "nameserver 169.254.1.1" "first pasta nameserver should be stub forwarder"
 
 	run_buildah run --network pasta:--dns-forward,192.168.0.1 $cid grep nameserver /etc/resolv.conf
 	assert "${lines[0]}" == "nameserver 192.168.0.1" "pasta nameserver with --dns-forward"
@@ -958,7 +971,7 @@ _EOF
 
 	run_buildah from --quiet --pull=false $WITH_POLICY_JSON alpine
 	cid=$output
-	for mask in /proc/acpi /proc/kcore /proc/keys /proc/latency_stats /proc/sched_debug /proc/scsi /proc/timer_list /proc/timer_stats /sys/dev/block /sys/devices/virtual/powercap /sys/firmware /sys/fs/selinux; do
+	for mask in /proc/acpi /proc/kcore /proc/keys /proc/latency_stats /proc/sched_debug /proc/scsi /proc/timer_list /proc/timer_stats /sys/devices/virtual/powercap /sys/firmware /sys/fs/selinux; do
 	        if test -d $mask; then
 		   run_buildah run $cid ls $mask
 		   expect_output "" "Directories should be empty"
@@ -983,4 +996,24 @@ _EOF
 	printf 'FROM alpine\nRUN\n echo && echo' > Dockerfile
 	run_buildah ? bud --pull=false --layers .
         expect_output --substring -- "-c requires an argument"
+}
+
+@test "root fs only mounted once" {
+  if test `uname` != Linux ; then
+    skip "not meaningful except on Linux"
+  fi
+  _prefetch busybox
+  run_buildah from --pull=never --quiet busybox
+  cid="$output"
+  run_buildah run $cid cat /proc/self/mountinfo
+  echo "$output" > ${TEST_SCRATCH_DIR}/mountinfo1
+  echo "# mountinfo unfiltered:"
+  cat ${TEST_SCRATCH_DIR}/mountinfo1
+  grep ' / rw,' ${TEST_SCRATCH_DIR}/mountinfo1 > ${TEST_SCRATCH_DIR}/mountinfo2
+  echo "# mountinfo grepped:"
+  cat ${TEST_SCRATCH_DIR}/mountinfo2
+  wc -l < ${TEST_SCRATCH_DIR}/mountinfo2 > ${TEST_SCRATCH_DIR}/mountinfo3
+  echo "# mountinfo count:"
+  cat ${TEST_SCRATCH_DIR}/mountinfo3
+  assert $(cat ${TEST_SCRATCH_DIR}/mountinfo3) -eq 1
 }
